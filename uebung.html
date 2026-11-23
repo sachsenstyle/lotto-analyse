@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Lotto-Übung</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/uebung.css">
+</head>
+<body class="uebung">
+  <header class="kopf">
+    <div class="kopf-innen">
+      <h1 class="titel">Lotto-Übung</h1>
+      <span class="uebung-marke">alles ausgedacht</span>
+      <nav class="reiter" aria-label="Wechseln"><a href="index.html">Zurück zum Tool</a></nav>
+    </div>
+  </header>
+
+  <!-- Diese Seite lädt den Speicher und die Anmeldung des Tools absichtlich
+       nicht. Sie kann die echten Zahlen deshalb weder lesen noch ändern. -->
+  <main class="inhalt">
+    <div class="stapel">
+      <p class="hinweis">Hier sind alle Ziehungen ausgedacht und kosten nichts. Die Übung ist komplett getrennt von deinen echten
+        Zahlen und der Wette. Sie speichert nichts: Lädst du die Seite neu, beginnt sie bei null.</p>
+
+      <section class="karte">
+        <h2>Ziehen</h2>
+        <p class="unterzeile">Fünf Spieler geben vor jeder Ziehung je zwei Tipps ab.</p>
+        <div class="knopf-zeile" id="knoepfe">
+          <button type="button" class="knopf haupt" data-anzahl="1">1 Ziehung</button>
+          <button type="button" class="knopf" data-anzahl="10">10</button>
+          <button type="button" class="knopf" data-anzahl="100">100</button>
+          <button type="button" class="knopf" data-anzahl="1000">1.000</button>
+          <button type="button" class="knopf" id="stopp" disabled>Stopp</button>
+          <button type="button" class="knopf" id="neustart" disabled>Neu anfangen</button>
+        </div>
+        <p class="unterzeile abstand" id="stand-uebung" aria-live="polite">Noch keine Ziehung.</p>
+        <div id="letzte"></div>
+      </section>
+
+      <section class="karte" id="karte-verlauf" hidden>
+        <h2>Wie sich der Durchschnitt einpendelt</h2>
+        <p class="unterzeile" id="fuehrung"></p>
+        <div class="diagramm-kopf">
+          <ul class="legende" id="legende"></ul>
+          <div class="auswahl" role="group" aria-label="Ausschnitt" id="ausschnitt">
+            <button type="button" data-ausschnitt="ganz" aria-pressed="true">Ganz</button>
+            <button type="button" data-ausschnitt="nah" aria-pressed="false">Nah dran</button>
+          </div>
+        </div>
+        <div class="diagramm" id="diagramm"></div>
+      </section>
+
+      <section class="karte" id="karte-tabelle" hidden>
+        <h2>Spielstand</h2>
+        <div id="tabelle"></div>
+      </section>
+
+      <section class="karte" id="karte-verteilung" hidden>
+        <h2>Wie viele Richtige hatten alle Tipps zusammen?</h2>
+        <div id="verteilung"></div>
+      </section>
+
+      <section class="karte">
+        <h2>Die festen Tipps</h2>
+        <p class="unterzeile">Der Spieler „Feste Tipps“ spielt immer dieselben Zahlen. Am Anfang sind sie ausgelost, du kannst aber
+          deine eigenen nehmen. Beim Ändern beginnt die Übung neu, damit niemand Zahlen nachträglich austauscht.</p>
+        <div id="feste"></div>
+      </section>
+    </div>
+  </main>
+
+  <div id="meldung" class="meldung" role="status" aria-live="polite"></div>
+  <noscript>Dieses Werkzeug braucht JavaScript.</noscript>
+
+  <script src="js/generator.js"></script>
+  <script src="js/analyse.js"></script>
+  <script src="js/uebung-logik.js"></script>
+  <script src="js/uebung.js"></script>
+</body>
+</html>

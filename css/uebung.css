@@ -1,0 +1,39 @@
+/* Zusätze nur für die Übungsseite */
+
+:root { --s-fest: var(--tinte); }
+.uebung .kopf { border-bottom: 3px solid var(--hinweis-rand); }
+.uebung-marke { background: var(--hinweis-flaeche); border: 1px solid var(--hinweis-rand); border-radius: 999px; padding: 2px 10px; font-size: 0.8rem; margin-right: auto; white-space: nowrap; }
+.uebung .reiter a { padding: 8px 12px 10px; color: var(--akzent); }
+.uebung .hinweis { margin: 0; display: block; }
+.uebung .stapel > .karte + .karte { margin-top: 0; }
+.punkt.fest { background: var(--s-fest); }
+
+.letzte-tipps { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 16px 24px; margin-top: 20px; }
+.letzte-tipps .tipp { margin-top: 6px; }
+.feste-liste { display: grid; gap: 8px; margin-top: 12px; }
+
+.diagramm-kopf { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; justify-content: space-between; margin: 14px 0 8px; }
+.legende { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.875rem; color: var(--tinte-2); }
+.legende strong { color: var(--tinte); font-variant-numeric: tabular-nums; }
+.legende .strich { display: inline-block; width: 16px; border-top: 2px dashed var(--gedaempft); margin-right: 8px; vertical-align: middle; }
+
+.diagramm { position: relative; }
+.diagramm svg { display: block; max-width: 100%; touch-action: pan-y; }
+.gitter { stroke: var(--linie); stroke-width: 1; }
+.achse { fill: var(--gedaempft); font-size: 12px; font-variant-numeric: tabular-nums; }
+.erwartung { stroke: var(--gedaempft); stroke-width: 2; stroke-dasharray: 5 5; }
+.faden { stroke: var(--achse); stroke-width: 1; }
+.linie { fill: none; stroke-width: 2; stroke-linejoin: round; }
+.linie.zufall { stroke: var(--s-zufall); } .marke.zufall { fill: var(--s-zufall); }
+.linie.heiss { stroke: var(--s-heiss); } .marke.heiss { fill: var(--s-heiss); }
+.linie.kalt { stroke: var(--s-kalt); } .marke.kalt { fill: var(--s-kalt); }
+.linie.ausgewogen { stroke: var(--s-ausgewogen); } .marke.ausgewogen { fill: var(--s-ausgewogen); }
+.linie.fest { stroke: var(--s-fest); } .marke.fest { fill: var(--s-fest); }
+.marke { stroke: var(--flaeche); stroke-width: 2; }
+.diagramm-tipp { position: absolute; top: 12px; background: var(--flaeche); border: 1px solid var(--achse); border-radius: 8px; padding: 8px 12px; font-size: 0.85rem; pointer-events: none; white-space: nowrap; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12); }
+
+@media (max-width: 760px) {
+  .uebung-marke { margin: 0 0 0 auto; }
+  .letzte-tipps { grid-template-columns: 1fr; }
+  #tabelle tr > :nth-child(4) { display: none; }
+}
