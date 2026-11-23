@@ -1430,6 +1430,7 @@
   // Beim Start den Wochentag der nächsten Ziehung zeigen.
   const heute = Kalender.heute();
   zustand.ansicht = Kalender.naechsterTermin('mi', heute) <= Kalender.naechsterTermin('sa', heute) ? 'mi' : 'sa';
+  if (window.location.hash === '#daten') zustand.ansicht = 'daten';   // direkt zur Anmeldung
   zeichne();
 
   Wolke.start({
