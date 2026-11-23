@@ -71,6 +71,8 @@ const Abgleich = (() => {
     ergebnis.startDatum = lokal.startDatum < fern.startDatum ? lokal.startDatum : fern.startDatum;
     ergebnis.letzteSicherung = [lokal.letzteSicherung, fern.letzteSicherung].filter(Boolean).sort().pop() || null;
 
+    ergebnis.wette = waehle(basis.wette, lokal.wette, fern.wette);
+
     ergebnis.ziehungen = {};
     for (const datum of [...new Set([...Object.keys(lokal.ziehungen), ...Object.keys(fern.ziehungen)])].sort()) {
       const termin = terminZusammen(basis.ziehungen[datum], lokal.ziehungen[datum], fern.ziehungen[datum]);

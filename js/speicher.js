@@ -27,6 +27,8 @@ const Speicher = (() => {
       // Rücksicht auf ältere Daten weiter „eigeneScheine“.
       eigeneScheine: { mi: leererDauerschein(), sa: leererDauerschein() },
       eigeneScheine2: { mi: leererDauerschein(), sa: leererDauerschein() },
+      // Namen der beiden Seiten in der Wette (leer = Vorgabe)
+      wette: { links: '', rechts: '' },
       letzteSicherung: null,
     };
   }
@@ -87,6 +89,8 @@ const Speicher = (() => {
     const sauber = leer();
     if (istDatum(roh.startDatum)) sauber.startDatum = roh.startDatum;
     if (typeof roh.letzteSicherung === 'string') sauber.letzteSicherung = roh.letzteSicherung;
+    const name = (wert) => (typeof wert === 'string' ? wert.trim().slice(0, 30) : '');
+    sauber.wette = { links: name(roh.wette?.links), rechts: name(roh.wette?.rechts) };
     for (const feld of DAUER_FELDER) {
       const dauer = roh[feld] && typeof roh[feld] === 'object' ? roh[feld] : {};
       sauber[feld] = { mi: bereinigeDauerschein(dauer.mi, 'mi'), sa: bereinigeDauerschein(dauer.sa, 'sa') };

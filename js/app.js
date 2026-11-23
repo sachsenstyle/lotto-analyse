@@ -12,7 +12,7 @@
     datum: { mi: null, sa: null },     // gewählter Termin je Wochentag
     strategie: 'zufall',               // gewählter Schein in der Tagesansicht
     // zeitraum: 'alle' oder 'h1', 'h2', ... für ein einzelnes Halbjahr
-    analyse: { tag: 'alle', strategie: 'zufall', zeitraum: 'alle', alleGespielten: false },
+    analyse: { tag: 'alle', strategie: 'zufall', zeitraum: 'alle', alleGespielten: false, alleWette: false },
   };
 
   const inhalt = document.getElementById('inhalt');
@@ -788,6 +788,9 @@
         }, h('div', { style: `width:${(wochen / WOCHEN_BIS_ANALYSE) * 100}%` }))));
     }
 
+    const wette = karteWette(ziehungen);
+    if (wette) teile.push(wette);
+
     if (fertig.length === 0) {
       teile.push(h('section', { class: 'karte leer' },
         h('h2', null, 'Noch nichts auszuwerten'),
@@ -919,6 +922,113 @@
     }
     karte.append(h('p', { class: 'klein abstand' }, 'Fett gedruckte Zahlen wurden gezogen.'));
     return karte;
+  }
+
+  // Die Wette: Dauerschein des Zufallsgenerators gegen die eigenen Scheine.
+  function karteWette(ziehungen) {
+    const seiten = { links: {}, rechts: {} };
+    for (const tag of ['mi', 'sa']) {
+      seiten.links[tag] = [dauerschein(tag, 'generator')];
+      seiten.rechts[tag] = EIGENE_ARTEN.map((art) => dauerschein(tag, art));
+    }
+    const hatTipps = (scheine) => scheine.some((schein) => schein.tipps.length > 0);
+    const tage = ['mi', 'sa'].filter((tag) => hatTipps(seiten.links[tag]) && hatTipps(seiten.rechts[tag]));
+    if (tage.length === 0) return null;
+
+    const namen = {
+      links: zustand.daten.wette?.links || 'Zufallsgenerator',
+      rechts: zustand.daten.wette?.rechts || 'Eigene Zahlen',
+    };
+    const w = Analyse.werteWette(ziehungen, seiten);
+    const anzahl = w.liste.length;
+
+    // Erster Tag, an dem beide Seiten Tipps im Rennen haben
+    const beginn = (tag) => ['links', 'rechts']
+      .map((seite) => seiten[seite][tag].flatMap((schein) => schein.tipps.map((tipp) => tipp.ab)).sort()[0])
+      .sort().pop();
+
+    const karte = h('section', { class: 'karte wette' }, h('h2', null, 'Die Wette'));
+    if (anzahl === 0) {
+      karte.append(h('p', { class: 'unterzeile' }, `${namen.links} gegen ${namen.rechts}. Es geht los am `
+        + `${tage.map((tag) => `${Kalender.formatKurz(beginn(tag))} (${Kalender.TAGE[tag].name})`).join(' und am ')}. `
+        + 'Sobald du dafür die echten Zahlen einträgst, steht hier der Spielstand.'), wettNamen(namen));
+      return karte;
+    }
+
+    karte.append(
+      h('p', { class: 'wette-stand' }, w.vorn === 'gleich' ? 'Unentschieden' : ['Vorn liegt: ', h('strong', null, namen[w.vorn])]),
+      h('p', { class: 'unterzeile' }, `Nach ${anzahl} ${anzahl === 1 ? 'Ziehung' : 'Ziehungen'}. Maßstab sind die durchschnittlichen Richtigen pro Tipp. `
+        + 'Gezählt werden Ziehungen, bei denen beide Seiten Tipps im Rennen hatten.'));
+
+    const zeile = (titel, wert, klasse) => h('tr', klasse ? { class: klasse } : null,
+      h('th', { scope: 'row' }, titel), h('td', null, wert(w.links)), h('td', null, wert(w.rechts)));
+    const tagZeile = (tag) => {
+      const n = w.ziehungen[tag];
+      return zeile(`${Kalender.TAGE[tag].name}: Richtige`, (seite) => (n > 0 ? ganz(seite[tag]) : `ab ${Kalender.formatKurz(beginn(tag))}`));
+    };
+    karte.append(h('div', { class: 'tabelle-rahmen abstand' }, h('table', { class: 'wette-tabelle' },
+      h('thead', null, h('tr', null, h('td', null), h('th', { scope: 'col' }, namen.links), h('th', { scope: 'col' }, namen.rechts))),
+      h('tbody', null,
+        tage.map(tagZeile),
+        zeile('Zusammen', (seite) => ganz(seite.summe)),
+        zeile('Gewertete Tipps', (seite) => ganz(seite.tipps)),
+        zeile('Ø Richtige pro Tipp', (seite) => zahl2(seite.mittel), 'wichtig'),
+        zeile('Bester Tipp (Richtige)', (seite) => seite.beste),
+        zeile('Gewinne', (seite) => ganz(seite.gewinne)),
+        zeile('Ziehungen gewonnen', (seite) => ganz(seite.tagessiege))))));
+
+    let einordnung = `Ab ${Analyse.MIN_ZIEHUNGEN_FUER_URTEIL} Ziehungen sagt dir das Tool, ob der Unterschied mehr als Glück sein könnte.`;
+    if (anzahl >= Analyse.MIN_ZIEHUNGEN_FUER_URTEIL) {
+      einordnung = w.abweichung !== null && Math.abs(w.abweichung) < 2
+        ? 'Der Unterschied ist so klein, dass reiner Zufall ihn gut erklärt.'
+        : 'Der Unterschied ist auffällig. Bei reinem Zufall kommt das etwa bei einem von 20 Vergleichen vor, behalte ihn also im Auge.';
+    }
+    karte.append(h('p', { class: 'klein abstand' }, einordnung));
+
+    const alle = [...w.liste].reverse();
+    const sichtbar = zustand.analyse.alleWette ? alle : alle.slice(0, GESPIELTE_IN_KURZLISTE);
+    const treffer = (liste) => (liste.length === 1 ? String(liste[0]) : `${liste.reduce((a, b) => a + b, 0)} (${liste.join('+')})`);
+    karte.append(
+      h('h3', null, 'Jede Ziehung'),
+      h('div', { class: 'tabelle-rahmen' }, h('table', { class: 'wette-tabelle' },
+        h('thead', null, h('tr', null, h('th', { scope: 'col' }, 'Ziehung'), h('th', { scope: 'col' }, namen.links),
+          h('th', { scope: 'col' }, namen.rechts), h('th', { scope: 'col' }, 'Besser'))),
+        h('tbody', null, sichtbar.map((z) => h('tr', null,
+          h('th', { scope: 'row' }, `${Kalender.TAGE[z.tag].name.slice(0, 2)} ${Kalender.formatKurz(z.datum)}`),
+          h('td', null, treffer(z.links)),
+          h('td', null, treffer(z.rechts)),
+          h('td', null, z.besser === 'gleich' ? 'gleich' : namen[z.besser])))))));
+    if (alle.length > GESPIELTE_IN_KURZLISTE) {
+      karte.append(h('div', { class: 'knopf-zeile' }, h('button', {
+        type: 'button',
+        class: 'knopf',
+        onclick: () => { zustand.analyse.alleWette = !zustand.analyse.alleWette; zeichne(); },
+      }, zustand.analyse.alleWette ? 'Nur die neuesten zeigen' : `Alle ${alle.length} zeigen`)));
+    }
+    karte.append(wettNamen(namen));
+    return karte;
+  }
+
+  function wettNamen(namen) {
+    const feld = (id, titel, wert) => [
+      h('label', { for: id }, titel),
+      h('input', { id, type: 'text', maxlength: 30, value: wert, autocomplete: 'off' }),
+    ];
+    const formular = h('form', {
+      class: 'anmeldung wette-namen',
+      onsubmit: (ereignis) => {
+        ereignis.preventDefault();
+        const [links, rechts] = [...formular.querySelectorAll('input')].map((eingabe) => eingabe.value.trim().slice(0, 30));
+        zustand.daten.wette = { links, rechts };
+        sichern();
+        melde('Namen gespeichert.');
+        zeichne();
+      },
+    },
+    feld('wette-links', 'Seite Zufallsgenerator', namen.links),
+    feld('wette-rechts', 'Seite eigene Zahlen', namen.rechts),
+    h('div', { class: 'knopf-zeile' }, h('button', { type: 'submit', class: 'knopf' }, 'Namen speichern')));
+    return h('details', { class: 'abstand' }, h('summary', null, 'Namen ändern'), formular);
   }
 
   // Die festen Tipps, Mittwoch und Samstag getrennt, eigene Zahlen extra.
@@ -1184,6 +1294,10 @@
           + 'Analyse, sondern bleiben mit ihren bisherigen Ergebnissen stehen.'),
         h('p', null, 'Die Superzahl des Dauerscheins kommt anfangs vom Schein des ersten übernommenen Tipps. Änderst du sie, gilt die '
           + 'neue ab der nächsten offenen Ziehung; frühere Ziehungen behalten die damalige.'),
+        h('h3', null, 'Die Wette'),
+        h('p', null, 'Gibt es an einem Wochentag Tipps im Dauerschein und auf einem eigenen Schein, zeigt die Analyse oben „Die Wette“: '
+          + 'Zufallsgenerator gegen eigene Zahlen. Eine Ziehung zählt nur, wenn beide Seiten Tipps im Rennen hatten. Vorn liegt, wer im '
+          + 'Durchschnitt mehr Richtige pro Tipp hat. Deshalb ist die Wette auch fair, wenn eine Seite mehr Tipps hat.'),
         h('h3', null, 'Eigene Zahlen'),
         h('p', null, `Zusätzlich hast du je Wochentag zwei eigene Scheine mit Platz für bis zu ${DAUERTIPPS_MAX} Tipps aus selbst `
           + 'gewählten Zahlen. Für sie gelten dieselben Regeln. Jeder Schein hat seine eigene Superzahl und steht in der Analyse '
@@ -1443,7 +1557,8 @@
       window.scrollTo(0, stelle);
     },
     // Nicht, solange jemand Zahlen anklickt und noch nicht gespeichert hat
-    darfErsetzen: () => !inhalt.querySelector('[data-eingabe] [aria-pressed="true"]'),
+    // oder gerade einen Namen eintippt
+    darfErsetzen: () => !inhalt.querySelector('[data-eingabe] [aria-pressed="true"], .wette-namen input:focus'),
     zeigeStatus: zeigeStand,
   }, Speicher.hatteDaten());
 })();

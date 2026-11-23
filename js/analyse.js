@@ -304,10 +304,81 @@ const Analyse = (() => {
     return ergebnis;
   }
 
+  // Wette zwischen zwei Seiten, die jeweils einen oder mehrere feste Scheine haben.
+  //   seiten: { links: { mi: [Schein, ...], sa: [...] }, rechts: { ... } }
+  // Eine Ziehung zählt nur, wenn an diesem Tag beide Seiten mindestens einen
+  // Tipp im Rennen hatten. Es zählen die Tipps, die damals galten, auch wenn sie
+  // inzwischen beendet sind. So lässt sich nachträglich nichts schönrechnen.
+  function werteWette(ziehungen, seiten) {
+    const leereSeite = () => ({ tipps: 0, summe: 0, gewinne: 0, beste: 0, tagessiege: 0, mi: 0, sa: 0, mittel: null });
+    const ergebnis = {
+      links: leereSeite(), rechts: leereSeite(), liste: [], ziehungen: { mi: 0, sa: 0 },
+      abweichung: null, vorn: null,
+    };
+
+    const spiele = (scheine, datum, echt) => scheine.flatMap((schein) => {
+      const superzahlRichtig = dauerSuperzahl(schein, datum) === echt.superzahl;
+      return schein.tipps.filter((tipp) => dauertippAktiv(tipp, datum)).map((tipp) => {
+        const treffer = zaehleTreffer(tipp.zahlen, echt.zahlen);
+        return { treffer, klasse: gewinnklasse(treffer, superzahlRichtig) };
+      });
+    });
+
+    const unterschiede = [];
+    for (const datum of Object.keys(ziehungen).sort()) {
+      const { echt } = ziehungen[datum];
+      const tag = Kalender.tagVon(datum);
+      if (!echt || !tag) continue;
+      const links = spiele(seiten.links[tag], datum, echt);
+      const rechts = spiele(seiten.rechts[tag], datum, echt);
+      if (links.length === 0 || rechts.length === 0) continue;
+
+      ergebnis.ziehungen[tag] += 1;
+      const mittel = {};
+      for (const [name, tipps] of [['links', links], ['rechts', rechts]]) {
+        const seite = ergebnis[name];
+        const summe = tipps.reduce((a, t) => a + t.treffer, 0);
+        seite.tipps += tipps.length;
+        seite.summe += summe;
+        seite[tag] += summe;
+        seite.gewinne += tipps.filter((t) => t.klasse > 0).length;
+        seite.beste = Math.max(seite.beste, ...tipps.map((t) => t.treffer));
+        mittel[name] = summe / tipps.length;
+      }
+      const besser = vergleiche(mittel.links, mittel.rechts);
+      if (besser !== 'gleich') ergebnis[besser].tagessiege += 1;
+      unterschiede.push(mittel.links - mittel.rechts);
+      ergebnis.liste.push({
+        datum, tag, besser,
+        links: links.map((t) => t.treffer), rechts: rechts.map((t) => t.treffer),
+      });
+    }
+
+    const n = unterschiede.length;
+    if (n > 0) {
+      ergebnis.links.mittel = ergebnis.links.summe / ergebnis.links.tipps;
+      ergebnis.rechts.mittel = ergebnis.rechts.summe / ergebnis.rechts.tipps;
+      ergebnis.vorn = vergleiche(ergebnis.links.mittel, ergebnis.rechts.mittel);
+    }
+    if (n >= MIN_ZIEHUNGEN_FUER_URTEIL) {
+      const mittel = unterschiede.reduce((a, b) => a + b, 0) / n;
+      const varianz = unterschiede.reduce((a, b) => a + (b - mittel) ** 2, 0) / (n - 1);
+      if (varianz > 0) ergebnis.abweichung = mittel / Math.sqrt(varianz / n);
+      else ergebnis.abweichung = mittel === 0 ? 0 : null;
+    }
+    return ergebnis;
+  }
+
+  // Kleine Rechenungenauigkeiten sollen kein Unentschieden verhindern.
+  function vergleiche(links, rechts) {
+    if (Math.abs(links - rechts) < 1e-9) return 'gleich';
+    return links > rechts ? 'links' : 'rechts';
+  }
+
   return {
     ERWARTUNG_PRO_TIPP, MIN_ZIEHUNGEN_FUER_URTEIL, WOCHEN_PRO_HALBJAHR, KLASSEN,
     erwarteteVerteilung, klassenWahrscheinlichkeit, gewinnWahrscheinlichkeit,
     zaehleTreffer, gewinnklasse, halbjahre, werteGespielt, werteAus,
-    dauertippAktiv, dauerSuperzahl, werteDauerschein,
+    dauertippAktiv, dauerSuperzahl, werteDauerschein, werteWette,
   };
 })();
