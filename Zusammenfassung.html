@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lotto-Analyse · Zusammenfassung</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .lese th, .lese td { white-space: normal; text-align: left; vertical-align: top; }
+    .lese td:first-child, .lese th:first-child { white-space: nowrap; }
+    .text h3 { margin-top: 20px; }
+    .zurueck { color: var(--akzent); font-weight: 600; text-decoration: none; padding-bottom: 12px; }
+    .zurueck:hover { text-decoration: underline; }
+    .merksatz { background: var(--akzent-zart); border-left: 4px solid var(--akzent); border-radius: 6px; padding: 10px 14px; margin-top: 14px; max-width: 70ch; }
+    @media (max-width: 760px) {
+      .lese td:first-child, .lese th:first-child { white-space: normal; }
+      .lese th, .lese td { padding: 8px 6px; }
+    }
+    @media print { .kopf { position: static; } .karte { break-inside: avoid; } }
+  </style>
+</head>
+<body>
+  <header class="kopf">
+    <div class="kopf-innen">
+      <h1 class="titel">Lotto-Analyse <span class="titel-zusatz">Zusammenfassung zum Nachlesen</span></h1>
+      <a class="zurueck" href="index.html">Zum Tool</a>
+    </div>
+  </header>
+
+  <main class="inhalt text">
+
+    <section class="karte">
+      <h2>Worum es geht</h2>
+      <p>Du willst verstehen, wie ein Algorithmus funktioniert. Lotto 6 aus 49 ist dafür das erste Beispiel. Das Tool erzeugt für jede Ziehung am Mittwoch und am Samstag Tipps, du trägst danach die echten Zahlen ein, und die Analyse vergleicht beides über sechs Monate und länger.</p>
+      <p class="merksatz">Das Tool ist ein Experiment und kein Vorhersagewerkzeug. Es zeigt, wie ein Algorithmus arbeitet und wie man ihn misst.</p>
+      <p class="klein">Stand dieser Zusammenfassung: 16. November 2026. Erster Termin: Mittwoch, 18. November 2026.</p>
+    </section>
+
+    <section class="karte">
+      <h2>Wo das Tool liegt und wie du es öffnest</h2>
+      <ul>
+        <li>Ordner „Lotto-Analyse“ auf dem Schreibtisch.</li>
+        <li>Öffnen: Doppelklick auf <code>index.html</code>. Es braucht kein Internet und keine Installation.</li>
+        <li>Immer denselben Browser benutzen und den Ordner nicht verschieben oder umbenennen.</li>
+        <li>Nach einer Änderung am Tool die Seite einmal neu laden (Cmd + R).</li>
+      </ul>
+    </section>
+
+    <section class="karte">
+      <h2>So läuft ein Termin ab</h2>
+      <ol>
+        <li><strong>Vor der Ziehung:</strong> im Reiter „Mittwoch“ oder „Samstag“ den Termin wählen und „Tipps erzeugen“ anklicken. Es entstehen vier Scheine mit je 12 Tipps und einer Superzahl.</li>
+        <li><strong>Wenn du wirklich spielst:</strong> einen Tipp mit „Spielen“ markieren und die Superzahl deines Spielscheins einstellen. Das ist die letzte Ziffer der Spielschein-Nummer auf der Quittung. Pro Termin geht eine Markierung.</li>
+        <li><strong>Nach der Ziehung:</strong> die 6 echten Zahlen und die Superzahl eintragen und speichern.</li>
+        <li><strong>Sichern:</strong> im Reiter „Daten“ eine Sicherung herunterladen und in den Ordner „Lotto-Analyse“ legen.</li>
+      </ol>
+      <p class="merksatz">Die Reihenfolge ist wichtig: erst Tipps erzeugen und markieren, dann die echten Zahlen eintragen. Danach sind Tipps und Markierung gesperrt. Trägst du die echten Zahlen zuerst ein, bleibt der Termin ohne Tipps.</p>
+      <p>Die Sperre ist Absicht. Könnte man nach der Ziehung neu erzeugen oder den besten Tipp nachträglich als gespielt ausgeben, wäre die Analyse wertlos. Die echten Zahlen selbst lassen sich mit „Korrigieren“ ändern, falls du dich vertippt hast.</p>
+    </section>
+
+    <section class="karte">
+      <h2>Die vier Strategien</h2>
+      <p>Eine Strategie ist eine Art, wie der Generator Zahlen auswählt. Alle vier laufen bei jedem Termin gleichzeitig und treten gegeneinander an.</p>
+      <div class="tabelle-rahmen abstand">
+        <table class="lese">
+          <thead><tr><th scope="col">Strategie</th><th scope="col">So wählt sie</th><th scope="col">Passt sie sich an?</th></tr></thead>
+          <tbody>
+            <tr><td><span class="punkt zufall"></span>Reiner Zufall</td><td>Jede Zahl von 1 bis 49 hat dieselbe Chance. Das ist die Messlatte für die anderen.</td><td>Nein</td></tr>
+            <tr><td><span class="punkt heiss"></span>Heiße Zahlen</td><td>Bevorzugt Zahlen, die an diesem Wochentag bisher oft gezogen wurden. Gewicht = 1 + Anzahl der bisherigen Ziehungen der Zahl.</td><td>Ja, nach jeder eingetragenen Ziehung</td></tr>
+            <tr><td><span class="punkt kalt"></span>Kalte Zahlen</td><td>Das Gegenteil: bevorzugt selten gezogene Zahlen. Gewicht = 1 ÷ (1 + Anzahl).</td><td>Ja, nach jeder eingetragenen Ziehung</td></tr>
+            <tr><td><span class="punkt ausgewogen"></span>Ausgewogen</td><td>Zieht zufällig und verwirft den Tipp, bis er vier Regeln erfüllt: 2 bis 4 gerade Zahlen, Summe zwischen 100 und 200, höchstens zwei Nachbarzahlen, mindestens eine Zahl über 31.</td><td>Nein</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul>
+        <li>„Heiß“ und „Kalt“ sehen nur echte Ziehungen desselben Wochentags, die vor dem Tipp-Termin liegen. Mittwoch und Samstag bleiben getrennt.</li>
+        <li>Beim ersten Termin gibt es keine Vorgeschichte. „Heiß“ und „Kalt“ ziehen dort wie der reine Zufall.</li>
+        <li>„Heiß“ wird von selbst schärfer: Nach 26 Ziehungen wählt es eine siebenmal gezogene Zahl etwa siebenmal so oft wie eine nie gezogene (rund 22 % gegenüber 3 % je Tipp, reiner Zufall wäre 12,2 %).</li>
+      </ul>
+    </section>
+
+    <section class="karte">
+      <h2>Was ein Algorithmus ist</h2>
+      <p>Eine feste Folge von Schritten, die aus einer Eingabe ein Ergebnis macht. Am Beispiel „Heiße Zahlen“:</p>
+      <div class="tabelle-rahmen abstand">
+        <table class="lese">
+          <tbody>
+            <tr><td>Eingabe</td><td>alle bisher eingetragenen echten Ziehungen des Wochentags</td></tr>
+            <tr><td>Schritt 1</td><td>zählen, wie oft jede Zahl von 1 bis 49 vorkam</td></tr>
+            <tr><td>Schritt 2</td><td>jeder Zahl ein Gewicht geben: 1 + Anzahl</td></tr>
+            <tr><td>Schritt 3</td><td>sechsmal eine Zahl ziehen: schwere Zahlen kommen öfter, eine gezogene Zahl kommt aus dem Topf</td></tr>
+            <tr><td>Ergebnis</td><td>ein Tipp mit 6 Zahlen</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Die anderen Strategien ändern nur Schritt 2 oder hängen eine Prüfung an.</p>
+      <h3>Zum Selbst-Nachprüfen</h3>
+      <p>Nimm einen Tipp vom Schein „Ausgewogen“ und prüfe die vier Regeln von Hand: gerade Zahlen zählen, Summe ausrechnen, Nachbarzahlen suchen, eine Zahl über 31 finden. Mach dasselbe mit Tipps von „Reiner Zufall“. Dort findest du nach einigen Versuchen einen, der eine Regel bricht.</p>
+    </section>
+
+    <section class="karte">
+      <h2>Was der Generator kann und was nicht</h2>
+      <ul>
+        <li><strong>Anpassen heißt nicht genauer werden.</strong> „Heiß“ und „Kalt“ lernen, welche Zahlen früher kamen. Die Kugeln haben aber kein Gedächtnis: Jede Ziehung ist unabhängig von der vorigen. In den alten Zahlen steckt nichts, was für die nächste Ziehung nützt.</li>
+        <li><strong>Was zu erwarten ist:</strong> bei allen vier Strategien etwa 0,73 Richtige pro Tipp (6 × 6 ÷ 49), also knapp 9 Richtige auf einem Schein mit 12 Tipps. Meist sind es 0, 1 oder 2 Richtige je Tipp.</li>
+        <li><strong>Was mit der Zeit genauer wird:</strong> deine Messung. Nach zwei Ziehungen kann eine Strategie zufällig weit vorn liegen, nach sechs Monaten pendelt sich der Durchschnitt ein.</li>
+        <li><strong>„Ausgewogen“</strong> ändert nicht die Trefferchance. Es meidet nur Muster, die viele Menschen tippen. Im Gewinnfall müsste man dadurch seltener teilen.</li>
+      </ul>
+      <p class="merksatz">Ein Algorithmus kann nur lernen, wenn die Daten ein Muster enthalten. Beim Wetter ist das so, bei der Lottoziehung nicht.</p>
+    </section>
+
+    <section class="karte">
+      <h2>Die Analyse lesen</h2>
+      <div class="tabelle-rahmen abstand">
+        <table class="lese">
+          <thead><tr><th scope="col">Abschnitt</th><th scope="col">Was er zeigt</th></tr></thead>
+          <tbody>
+            <tr><td>Fortschritt</td><td>In welcher Woche des laufenden Halbjahrs du bist. Im ersten Halbjahr heißt die Analyse „Vorschau“.</td></tr>
+            <tr><td>Strategien im Vergleich</td><td>Durchschnittliche Richtige pro Tipp je Strategie, getrennt nach Mittwoch und Samstag, dazu Abweichung und Urteil.</td></tr>
+            <tr><td>Halbjahre im Vergleich</td><td>Dieselbe Strategie in jedem Halbjahr nebeneinander.</td></tr>
+            <tr><td>Meine gespielten Tipps</td><td>Nur die markierten Tipps: Anzahl, Durchschnitt, Gewinne und eine Liste.</td></tr>
+            <tr><td>Im Detail</td><td>Verteilung der Richtigen als Diagramm, Gewinnklassen und wie oft jede Zahl in den Tipps und in den echten Ziehungen vorkam.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Das Urteil</h3>
+      <ul>
+        <li>Ein Urteil gibt es erst ab 8 ausgewerteten Ziehungen. Vorher wäre es reines Rauschen.</li>
+        <li>Die Abweichung misst den Abstand zur Erwartung. Werte zwischen −2 und +2 sind bei reinem Zufall normal, dann steht dort „im Zufallsbereich“.</li>
+        <li>Die Tabelle vergleicht mehrere Strategien und zwei Wochentage. Dass eine davon rein zufällig „auffällig“ wird, ist nicht selten.</li>
+      </ul>
+      <h3>Halbjahre</h3>
+      <ul>
+        <li>Ein Halbjahr sind genau 26 Wochen ab deinem ersten Termin mit Tipps. So hat jedes Halbjahr gleich viele Ziehungen: 26 am Mittwoch und 26 am Samstag.</li>
+        <li>Ist dein erster Termin der 18. November 2026, beginnt das zweite Halbjahr am 19. Mai 2027.</li>
+        <li>Sobald das zweite Halbjahr läuft, erscheint oben in der Analyse die Auswahl „Zeitraum“ (Gesamt, 1. Halbjahr, 2. Halbjahr …).</li>
+        <li>Das Tool hat kein Enddatum. Du kannst es beliebig viele Halbjahre weiterführen.</li>
+      </ul>
+    </section>
+
+    <section class="karte">
+      <h2>Dein Plan: nach sechs Monaten einen Tipp spielen</h2>
+      <ul>
+        <li><strong>Ein Tipp spielen, zwölf messen.</strong> Das Tool erzeugt weiter 12 Tipps je Strategie. Du spielst einen davon, gemessen wird mit allen zwölf. Mit nur einem Tipp pro Ziehung wären es in sechs Monaten 26 statt 312 Tipps je Wochentag, daraus ließe sich nichts ablesen.</li>
+        <li><strong>Die Strategie, die vorn liegt, hatte Glück.</strong> Im nächsten Halbjahr rutscht sie meist zurück ins Mittelfeld. Das heißt „Rückkehr zur Mitte“.</li>
+        <li><strong>So prüfst du es:</strong> Im ersten Halbjahr entsteht eine Vermutung, im zweiten prüfst du sie mit neuen Zahlen in der Tabelle „Halbjahre im Vergleich“. Bleibt eine Strategie in jedem Halbjahr vorn, ist das ein Hinweis. Wechselt die Führung, war es Zufall.</li>
+        <li><strong>Gewinnchance eines einzelnen Tipps:</strong> etwa 3 %, also rund ein Gewinn in 31 Ziehungen, egal mit welcher Strategie. Die häufigste Gewinnklasse ist „2 Richtige + Superzahl“.</li>
+        <li>Von den Lotto-Einsätzen wird im Schnitt etwa die Hälfte wieder ausgezahlt.</li>
+      </ul>
+    </section>
+
+    <section class="karte">
+      <h2>Dauerscheine: immer dieselben Tipps</h2>
+      <p>Ergänzt am 19. November 2026. Mittwoch und Samstag haben je einen eigenen Dauerschein mit bis zu 12 festen Tipps. Das Tool vergleicht sie bei jeder Ziehung ihres Wochentags automatisch mit den echten Zahlen.</p>
+      <ol>
+        <li><strong>Übernehmen:</strong> im Reiter „Mittwoch“ oder „Samstag“ neben einem erzeugten Tipp auf „+ Dauer“ klicken. Der Knopf zeigt dann „Dauer ✓“. Ein zweiter Klick nimmt den Tipp wieder heraus.</li>
+        <li><strong>Ansehen:</strong> unter den echten Zahlen steht die Karte „Mittwochs-Dauerschein“ bzw. „Samstags-Dauerschein“ mit allen festen Tipps und, für eine ausgewertete Ziehung, ihren Richtigen.</li>
+        <li><strong>Superzahl:</strong> in derselben Karte einstellen. Spielst du den Schein wirklich, nimm die letzte Ziffer deiner Spielschein-Nummer.</li>
+        <li><strong>Auswerten:</strong> im Reiter „Analyse“, Karte „Dauerscheine und eigene Scheine“: Mittwoch und Samstag nebeneinander und darunter jeder Tipp einzeln.</li>
+      </ol>
+      <ul>
+        <li>Ein Dauertipp zählt erst ab der nächsten Ziehung, deren Zahlen noch nicht eingetragen sind. Einen Tipp mit bekanntem Ergebnis nachträglich hineinzunehmen, würde die Auswertung verfälschen.</li>
+        <li>Herausgenommene Tipps bleiben mit ihren bisherigen Ergebnissen in der Analyse stehen. Sonst könnte man schlechte Tipps aussortieren.</li>
+        <li>Auch ein Dauerschein trifft im Schnitt 0,73 Richtige pro Tipp. Er ist ideal, um nach sechs Monaten genau die Tipps weiterzuverfolgen, die du dann wirklich spielst.</li>
+        <li>Alle erzeugten Zufallszahlen bleiben ohnehin gespeichert, im Browser und in der Sicherungsdatei.</li>
+      </ul>
+      <h3>Eigene Zahlen</h3>
+      <p>Ergänzt am 23. November 2026. Für Mittwoch und Samstag hast du je zwei eigene Scheine mit Platz für bis zu 12 Tipps aus deinen eigenen Zahlen. Sie kommen zum Dauerschein des Zufallsgenerators dazu.</p>
+      <ol>
+        <li><strong>Eintragen:</strong> im Reiter „Mittwoch“ oder „Samstag“ ganz unten in der Karte „Mein eigener Mittwochs-Schein 1“ oder „2“ (bzw. Samstags-Schein) auf „Eigenen Tipp eintragen“ klicken, 6 Zahlen und beim ersten Tipp die Superzahl wählen, speichern. Mit „Weiteren Tipp eintragen“ kommen mehr Tipps dazu.</li>
+        <li><strong>Auswerten:</strong> im Reiter „Analyse“, Karte „Dauerscheine und eigene Scheine“. Jeder eigene Schein hat dort eine eigene Zeile neben dem Zufallsgenerator.</li>
+      </ol>
+      <ul>
+        <li>Es gelten dieselben Regeln wie beim Dauerschein: Ein eigener Tipp zählt ab der nächsten Ziehung ohne eingetragene Zahlen, und herausgenommene Tipps behalten ihre Ergebnisse.</li>
+        <li>Jeder Schein hat seine eigene Superzahl.</li>
+        <li>Zu erwarten sind auch hier 0,73 Richtige pro Tipp. Je weniger Tipps ein Schein hat, desto stärker schwankt sein Durchschnitt.</li>
+      </ul>
+    </section>
+
+    <section class="karte">
+      <h2>Daten und Sicherung</h2>
+      <ul>
+        <li>Ohne Anmeldung liegen alle Zahlen nur im Speicher dieses Browsers. „Browserdaten löschen“ oder ein anderer Browser bedeutet dann: Die Zahlen sind weg.</li>
+        <li>Mit Anmeldung (Reiter „Daten“, „Auf allen Geräten“) liegen sie zusätzlich auf dem Server und erscheinen auf jedem Gerät, auf dem du angemeldet bist. Ohne Internet kannst du weiterarbeiten, der Abgleich wird nachgeholt.</li>
+        <li>Oben neben dem Titel steht der Stand: „abgeglichen“, „offline“ oder „nur dieses Gerät“.</li>
+        <li>Im Reiter „Daten“ trotzdem regelmäßig „Sicherung herunterladen“. Das Tool erinnert dich nach 14 Tagen. Es reicht, die neueste Datei aufzuheben.</li>
+        <li>Mit „Sicherung einlesen“ holst du die Daten aus der Datei zurück. Die jetzigen Daten im Browser werden dabei ersetzt.</li>
+        <li>„Alle Daten löschen“ im selben Reiter fängt bei null an. Bist du angemeldet, gilt das für alle Geräte.</li>
+      </ul>
+    </section>
+
+    <section class="karte">
+      <h2>Und im Online-Casino?</h2>
+      <ul>
+        <li>Roulette, Automaten und Würfelspiele laufen über einen Zufallsgenerator. Jede Runde ist unabhängig, wie die Lottoziehung. Vorhersagen kann ein Algorithmus dort nichts.</li>
+        <li>Die Runden sind viel schneller: Hunderte pro Stunde statt zwei pro Woche. Eine Analyse wäre schnell aussagekräftig, zeigt aber nur schneller, was feststeht.</li>
+        <li>Die Auszahlung liegt immer unter 100 % (Roulette etwa 97 %, Automaten meist 88 bis 96 %). Je mehr Runden, desto sicherer landet man im Minus.</li>
+        <li>Einsatz-Systeme wie Verdoppeln nach Verlust ändern nur die Verteilung der Verluste, nicht den Durchschnitt.</li>
+        <li>Programme, die auf der Casino-Seite selbst klicken oder mitlesen, verbieten die Anbieter.</li>
+        <li>Nur bei Spielen mit Können, etwa Poker gegen andere Spieler, gibt es Muster, mit denen Algorithmen arbeiten.</li>
+      </ul>
+    </section>
+
+    <section class="karte">
+      <h2>Ideen für später</h2>
+      <ul>
+        <li><strong>Roulette-Simulator mit Spielgeld</strong> im Tool: 100.000 Runden in einer Sekunde, um zu sehen, wie jedes Einsatz-System ins Minus läuft. Zurückgestellt, vielleicht später.</li>
+        <li><strong>„Heiß“ stärker machen:</strong> in <code>js/generator.js</code> bei <code>gewichtHeiss</code> statt <code>1 + anzahlGezogen</code> zum Beispiel <code>(1 + anzahlGezogen) ** 2</code>.</li>
+        <li><strong>Dasselbe Prinzip mit Daten, die ein Muster haben</strong> (Temperaturen, Besucherzahlen). Dort würde ein lernender Algorithmus tatsächlich besser abschneiden als der Zufall.</li>
+      </ul>
+    </section>
+
+    <section class="karte">
+      <h2>Die Dateien des Tools</h2>
+      <div class="tabelle-rahmen abstand">
+        <table class="lese">
+          <tbody>
+            <tr><td><code>index.html</code></td><td>Die Seite, die du öffnest.</td></tr>
+            <tr><td><code>js/generator.js</code></td><td>Der Zufallsgenerator und die vier Strategien. Hier steht der Algorithmus.</td></tr>
+            <tr><td><code>js/analyse.js</code></td><td>Die Rechnung: Richtige zählen, Gewinnklassen, Erwartung, Urteil, Halbjahre.</td></tr>
+            <tr><td><code>js/kalender.js</code></td><td>Rechnet mit den Terminen am Mittwoch und Samstag.</td></tr>
+            <tr><td><code>js/speicher.js</code></td><td>Speichert im Browser und prüft Sicherungsdateien.</td></tr>
+            <tr><td><code>js/app.js</code></td><td>Die Oberfläche mit allen Reitern.</td></tr>
+            <tr><td><code>css/style.css</code></td><td>Das Aussehen, hell und dunkel.</td></tr>
+            <tr><td><code>Zusammenfassung.html</code></td><td>Diese Seite.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="klein abstand">Im Tool selbst erklärt der Reiter „Erklärung“ den Ablauf, die Strategien und die Rechnung noch einmal.</p>
+    </section>
+
+  </main>
+</body>
+</html>

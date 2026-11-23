@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Lotto-Analyse</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="kopf">
+    <div class="kopf-innen">
+      <h1 class="titel">Lotto-Analyse <span class="titel-zusatz">6 aus 49</span></h1>
+      <button type="button" id="stand" class="stand"></button>
+      <nav class="reiter" aria-label="Bereiche">
+        <button type="button" data-ansicht="mi">Mittwoch</button>
+        <button type="button" data-ansicht="sa">Samstag</button>
+        <button type="button" data-ansicht="analyse">Analyse</button>
+        <button type="button" data-ansicht="erklaerung">Erklärung</button>
+        <button type="button" data-ansicht="daten">Daten</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="inhalt" class="inhalt"></main>
+
+  <div id="meldung" class="meldung" role="status" aria-live="polite"></div>
+  <div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+
+  <noscript>Dieses Werkzeug braucht JavaScript.</noscript>
+
+  <script src="js/kalender.js"></script>
+  <script src="js/speicher.js"></script>
+  <script src="js/generator.js"></script>
+  <script src="js/analyse.js"></script>
+  <script src="js/abgleich.js"></script>
+  <script src="js/wolke.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+# Nie veröffentlichen: persönliche Daten und Sicherungen
+*.json
+*.pdf
+.DS_Store
+.claude/
